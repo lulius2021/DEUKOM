@@ -51,7 +51,7 @@ const processSteps = [
 
 // --- Nav-Einträge hier anpassen ---
 // --- Nav-Einträge hier anpassen ---
-type Page = 'home' | 'work' | 'baselayer' | 'contact'
+type Page = 'home' | 'work' | 'baselayer' | 'contact' | 'impressum' | 'datenschutz' | 'agb'
 
 const navItems: { label: string; page: Page }[] = [
   { label: 'Start', page: 'home' },
@@ -66,7 +66,7 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState<Page>(() => {
     const hash = window.location.hash.replace('#', '') as Page
-    return ['home', 'work', 'baselayer', 'contact'].includes(hash) ? hash : 'home'
+    return ['home', 'work', 'baselayer', 'contact', 'impressum', 'datenschutz', 'agb'].includes(hash) ? hash : 'home'
   })
 
   const navigateTo = (page: Page) => {
@@ -173,11 +173,43 @@ function App() {
       blUpdateFn()
     }, 50)
 
+    // Chat scroll reveal
+    let chatUpdateFn: (() => void) | null = null
+
+    const initChat = setTimeout(() => {
+      const heroStage = document.querySelector<HTMLElement>('.hero-stage')
+      if (!heroStage) return
+      const chatMsgs = heroStage.querySelectorAll<HTMLElement>('.chat-scroll-msg')
+      if (chatMsgs.length === 0) return
+
+      chatUpdateFn = () => {
+        const rect = heroStage.getBoundingClientRect()
+        const scrolled = -rect.top
+        const startOffset = -rect.height * 0.3
+        const range = rect.height * 0.2
+
+        chatMsgs.forEach((msg) => {
+          const step = parseInt(msg.getAttribute('data-chat-step') || '0', 10)
+          const threshold = startOffset + (step / chatMsgs.length) * range
+          if (scrolled > threshold) {
+            msg.classList.add('chat-scroll-visible')
+          } else {
+            msg.classList.remove('chat-scroll-visible')
+          }
+        })
+      }
+
+      window.addEventListener('scroll', chatUpdateFn, { passive: true })
+      chatUpdateFn()
+    }, 50)
+
     return () => {
       observer.disconnect()
       window.removeEventListener('scroll', updateParallax)
       clearTimeout(initBl)
+      clearTimeout(initChat)
       if (blUpdateFn) window.removeEventListener('scroll', blUpdateFn)
+      if (chatUpdateFn) window.removeEventListener('scroll', chatUpdateFn)
       window.removeEventListener('resize', updateParallax)
       window.removeEventListener('pointermove', updatePointer)
     }
@@ -191,7 +223,7 @@ function App() {
   return (
     <main className="site-shell">
       <header className={`topbar ${headerCondensed ? 'is-condensed' : ''}`}>
-        <a href="#hero" className="brand">
+        <a href="#" className="brand" onClick={(e) => { e.preventDefault(); navigateTo('home'); }}>
           <span className="brand-letter">D</span>
           <span className="brand-collapse">E</span>
           <span className="brand-collapse">U</span>
@@ -252,18 +284,33 @@ function App() {
           </div>
 
           <div className="hero-stage reveal" data-reveal>
-            <div className="stage-card">
-              <DotField
-                dotRadius={1.5}
-                dotSpacing={14}
-                bulgeStrength={67}
-                glowRadius={160}
-                sparkle={false}
-                waveAmplitude={0}
-                gradientFrom="rgba(135, 96, 59, 0.4)"
-                gradientTo="rgba(214, 196, 174, 0.3)"
-                glowColor="rgba(18, 15, 13, 0.8)"
-              />
+            <div className="stage-card hero-mission">
+              <div className="mission-content">
+                <p className="mission-eyebrow">Unsere Mission für euch</p>
+                <h2 className="mission-title">
+                  Weniger Zeit
+                  <br />
+                  am Bildschirm.
+                  <br />
+                  Mehr Zeit für
+                  <br />
+                  das, was zählt.
+                </h2>
+                <p className="mission-sub">
+                  Wir automatisieren die Arbeit, die euch am Schreibtisch festhält —
+                  damit ihr wieder draußen sein könnt.
+                </p>
+                <button type="button" className="mission-cta" onClick={() => navigateTo('baselayer')}>
+                  Mehr erfahren
+                </button>
+              </div>
+              <div className="mission-visual">
+                <img
+                  className="mission-image"
+                  src="/mission-natur.jpg"
+                  alt="Natur"
+                />
+              </div>
             </div>
           </div>
 
@@ -542,47 +589,47 @@ function App() {
               <div className="bl-anno-line" />
               <div className="bl-anno-text">
                 <strong>Kundenprojekte</strong>
-                <p>Jedes Projekt hat eine eigene KONTEXT.md — der Agent weiß immer, wo ihr stehen geblieben seid.</p>
+                <p>KONTEXT.md speichert den aktuellen Stand.</p>
               </div>
             </div>
 
-            <div className="bl-annotation bl-annotation-left bl-anno-sops" data-anno-after="12">
+            <div className="bl-annotation bl-annotation-left bl-anno-sops" data-anno-after="11">
               <div className="bl-anno-line" />
               <div className="bl-anno-text">
-                <strong>Standard-Prozesse</strong>
-                <p>Eure SOPs als Markdown — der Agent arbeitet nach euren Regeln, nicht nach seinen.</p>
+                <strong>SOPs</strong>
+                <p>Eure Prozesse. Agent hält sich dran.</p>
               </div>
             </div>
 
-            <div className="bl-annotation bl-annotation-right bl-anno-team" data-anno-after="15">
+            <div className="bl-annotation bl-annotation-right bl-anno-team" data-anno-after="14">
               <div className="bl-anno-line" />
               <div className="bl-anno-text">
-                <strong>Team-Struktur</strong>
-                <p>Wer ist wofür zuständig? Der Agent kennt eure Rollen und Abläufe.</p>
+                <strong>Team</strong>
+                <p>Rollen und Zuständigkeiten.</p>
               </div>
             </div>
 
-            <div className="bl-annotation bl-annotation-left bl-anno-vorlagen" data-anno-after="18">
+            <div className="bl-annotation bl-annotation-left bl-anno-vorlagen" data-anno-after="17">
               <div className="bl-anno-line" />
               <div className="bl-anno-text">
                 <strong>Vorlagen</strong>
-                <p>Angebote, Rechnungen, E-Mails — immer im gleichen Format, immer on-brand.</p>
+                <p>Immer gleiches Format.</p>
               </div>
             </div>
 
-            <div className="bl-annotation bl-annotation-right bl-anno-skills" data-anno-after="22">
+            <div className="bl-annotation bl-annotation-right bl-anno-skills" data-anno-after="21">
               <div className="bl-anno-line" />
               <div className="bl-anno-text">
                 <strong>Skills</strong>
-                <p>Wiederholbare Aufgaben als Bausteine. Ein Befehl, fertig.</p>
+                <p>Ein Befehl, fertig.</p>
               </div>
             </div>
 
-            <div className="bl-annotation bl-annotation-left bl-anno-regeln" data-anno-after="25">
+            <div className="bl-annotation bl-annotation-left bl-anno-regeln" data-anno-after="23">
               <div className="bl-anno-line" />
               <div className="bl-anno-text">
                 <strong>Regeln</strong>
-                <p>Tonalität, Datenschutz, Formatierung — der Agent hält sich dran.</p>
+                <p>Tonalität und Datenschutz.</p>
               </div>
             </div>
 
@@ -803,22 +850,170 @@ function App() {
         </section>
       )}
 
+      {/* ===== IMPRESSUM ===== */}
+      {currentPage === 'impressum' && (
+        <div className="page-content legal-page">
+          <div className="content-frame">
+            <div className="legal-header reveal" data-reveal>
+              <p className="eyebrow">RECHTLICHES</p>
+              <h1>Impressum</h1>
+            </div>
+            <div className="legal-body reveal" data-reveal>
+              <h2>Angaben gemäß § 5 TMG</h2>
+              <p>
+                Julius Hartweger<br />
+                DEUKOM — KI-Workflows für Betriebe<br />
+                Burghausen, Bayern<br />
+                Deutschland
+              </p>
+              <p>
+                E-Mail: julius@deukom.de<br />
+                Telefon: Auf Anfrage<br />
+                Web: deukom.de
+              </p>
+
+              <hr />
+
+              <h2>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h2>
+              <p>Julius Hartweger, Burghausen, Bayern.</p>
+
+              <hr />
+
+              <h2>EU-Streitschlichtung</h2>
+              <p>Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit. Unsere E-Mail-Adresse finden Sie oben im Impressum. Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
+
+              <hr />
+
+              <h2>Haftung für Inhalte</h2>
+              <p>Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.</p>
+
+              <h2>Haftung für Links</h2>
+              <p>Unser Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich.</p>
+
+              <h2>Urheberrecht</h2>
+              <p>Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== DATENSCHUTZ ===== */}
+      {currentPage === 'datenschutz' && (
+        <div className="page-content legal-page">
+          <div className="content-frame">
+            <div className="legal-header reveal" data-reveal>
+              <p className="eyebrow">RECHTLICHES</p>
+              <h1>Datenschutzerklärung</h1>
+            </div>
+            <div className="legal-body reveal" data-reveal>
+              <h2>Verantwortliche Stelle</h2>
+              <p>
+                Julius Hartweger, DEUKOM, Burghausen, Bayern.<br />
+                E-Mail: julius@deukom.de
+              </p>
+
+              <hr />
+
+              <h2>Datenschutz auf einen Blick</h2>
+              <p>Diese Website verwendet keine Cookies. Kein Google Analytics, kein Facebook Pixel, kein Tracking. Wir wissen nicht, wer ihr seid — und das ist gut so. Eure Daten bleiben bei euch.</p>
+
+              <hr />
+
+              <h2>Hosting</h2>
+              <p>Diese Website wird extern gehostet. Die personenbezogenen Daten, die auf dieser Website erfasst werden, werden auf den Servern des Hosters gespeichert. Hierbei kann es sich um IP-Adressen, Kontaktanfragen, Meta- und Kommunikationsdaten handeln. Das ist technisch unvermeidbar und passiert bei jeder Website.</p>
+
+              <h2>Kontaktformular</h2>
+              <p>Wenn ihr uns per Kontaktformular Anfragen zukommen lasst, werden eure Angaben aus dem Anfrageformular inklusive der angegebenen Kontaktdaten zwecks Bearbeitung der Anfrage bei uns gespeichert. Diese Daten geben wir nicht ohne eure Einwilligung weiter.</p>
+
+              <h2>Cookies &amp; Tracking</h2>
+              <p>Diese Website verwendet keine Cookies zur Nachverfolgung. Es werden keine Tracking-Tools oder Analyse-Dienste von Drittanbietern eingesetzt.</p>
+
+              <hr />
+
+              <h2>Eure Rechte nach DSGVO</h2>
+              <p>Ihr habt jederzeit das Recht auf:</p>
+              <p>
+                <strong>Auskunft</strong> — was wir über euch gespeichert haben.<br />
+                <strong>Berichtigung</strong> — wenn etwas falsch ist.<br />
+                <strong>Löschung</strong> — wenn ihr wollt, dass wir alles löschen.<br />
+                <strong>Einschränkung</strong> — wenn ihr die Verarbeitung begrenzen wollt.<br />
+                <strong>Widerspruch</strong> — wenn ihr nicht einverstanden seid.
+              </p>
+              <p>Jederzeit per E-Mail an julius@deukom.de. Wir antworten innerhalb von 24 Stunden.</p>
+
+              <h2>Speicherdauer</h2>
+              <p>Eure personenbezogenen Daten verbleiben bei uns, bis der Zweck für die Datenverarbeitung entfällt. Fragt ihr nach Löschung, löschen wir — ohne Diskussion, ohne Verzögerung.</p>
+
+              <hr />
+
+              <h2>KI-Workflows &amp; Kundendaten</h2>
+              <p>DEUKOM arbeitet nach dem Prinzip der Datensparsamkeit. Alle KI-Workflows, die wir für Kunden einrichten, laufen lokal oder in deutschen Rechenzentren. Keine Cloud außerhalb der EU. Keine Übermittlung an OpenAI, Google oder andere Drittanbieter. DSGVO ist bei uns kein Marketing-Label — es ist Architektur.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== AGB ===== */}
+      {currentPage === 'agb' && (
+        <div className="page-content legal-page">
+          <div className="content-frame">
+            <div className="legal-header reveal" data-reveal>
+              <p className="eyebrow">RECHTLICHES</p>
+              <h1>Allgemeine Geschäfts&shy;bedingungen</h1>
+            </div>
+            <div className="legal-body reveal" data-reveal>
+              <h2>§ 1 Geltungsbereich</h2>
+              <p>Diese AGB gelten für alle Verträge zwischen Julius Hartweger, DEUKOM, Burghausen (nachfolgend „Auftragnehmer") und dem jeweiligen Auftraggeber (nachfolgend „Kunde") über die Erbringung von Dienstleistungen im Bereich KI-Integration, Workflow-Automatisierung und BaseLayer-Einrichtung.</p>
+
+              <h2>§ 2 Leistungsgegenstand</h2>
+              <p>Der Auftragnehmer erbringt Beratungs-, Analyse- und Implementierungsleistungen im Bereich KI-gestützter Automatisierung für kleine und mittelständische Unternehmen. Dazu gehört die Einrichtung von BaseLayer-Strukturen, Workflow-Automatisierung und laufende Betreuung. Der genaue Leistungsumfang ergibt sich aus der individuellen Vereinbarung zwischen den Parteien.</p>
+
+              <h2>§ 3 Vertragsschluss</h2>
+              <p>Ein Vertrag kommt durch die schriftliche Auftragsbestätigung des Auftragnehmers oder durch die Aufnahme der Leistungserbringung zustande. Angebote des Auftragnehmers sind freibleibend und unverbindlich.</p>
+
+              <hr />
+
+              <h2>§ 4 Vergütung und Zahlung</h2>
+              <p>Die Vergütung richtet sich nach der individuellen Vereinbarung. Sofern nicht anders vereinbart, wird nach Aufwand abgerechnet. Rechnungen sind innerhalb von 14 Tagen nach Rechnungsdatum ohne Abzug zahlbar.</p>
+              <p><strong>Das Erstgespräch (ca. 30 Minuten) ist immer kostenlos und unverbindlich.</strong></p>
+
+              <hr />
+
+              <h2>§ 5 Mitwirkungspflichten des Kunden</h2>
+              <p>Der Kunde stellt dem Auftragnehmer alle zur Leistungserbringung erforderlichen Informationen, Zugänge und Unterlagen rechtzeitig zur Verfügung. Der Kunde benennt einen festen Ansprechpartner für die Zusammenarbeit.</p>
+
+              <h2>§ 6 Datenschutz und Vertraulichkeit</h2>
+              <p>Der Auftragnehmer verpflichtet sich, alle im Rahmen der Zusammenarbeit erlangten Informationen vertraulich zu behandeln. Die Datenverarbeitung erfolgt DSGVO-konform. Alle KI-Workflows werden lokal oder in deutschen Rechenzentren betrieben — ohne Übermittlung an Cloud-Dienste außerhalb der EU.</p>
+
+              <h2>§ 7 Gewährleistung und Haftung</h2>
+              <p>Der Auftragnehmer haftet für Vorsatz und grobe Fahrlässigkeit unbeschränkt. Bei leichter Fahrlässigkeit haftet der Auftragnehmer nur bei Verletzung wesentlicher Vertragspflichten, beschränkt auf den vertragstypischen, vorhersehbaren Schaden.</p>
+
+              <h2>§ 8 Kündigung</h2>
+              <p>Beide Parteien können den Vertrag mit einer Frist von 14 Tagen zum Monatsende kündigen. Das Recht zur außerordentlichen Kündigung aus wichtigem Grund bleibt unberührt.</p>
+
+              <h2>§ 9 Schlussbestimmungen</h2>
+              <p>Es gilt das Recht der Bundesrepublik Deutschland. Gerichtsstand ist, soweit gesetzlich zulässig, Burghausen. Sollten einzelne Bestimmungen dieser AGB unwirksam sein oder werden, bleibt die Wirksamkeit der übrigen Bestimmungen davon unberührt.</p>
+
+              <p className="legal-note">Stand: Mai 2026</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <footer className="site-footer">
         <div className="footer-bar">
           <div className="footer-left">
-            <span className="footer-logo">D</span>
-            <span className="footer-brand-name">DEUKOM</span>
+            <img src={new URL('./assets/LTS.png', import.meta.url).href} alt="DEUKOM Logo" className="footer-logo-img" />
+            <span className="footer-brand-name">EUKOM</span>
           </div>
           <nav className="footer-nav">
-            <button type="button" onClick={() => navigateTo('work')}>Unsere Arbeit</button>
-            <span className="footer-dot">&middot;</span>
             <button type="button" onClick={() => navigateTo('contact')}>Kontakt</button>
             <span className="footer-dot">&middot;</span>
-            <button type="button" onClick={() => navigateTo('home')}>Impressum</button>
+            <button type="button" onClick={() => navigateTo('impressum')}>Impressum</button>
             <span className="footer-dot">&middot;</span>
-            <button type="button" onClick={() => navigateTo('home')}>Datenschutz</button>
+            <button type="button" onClick={() => navigateTo('datenschutz')}>Datenschutz</button>
             <span className="footer-dot">&middot;</span>
-            <button type="button" onClick={() => navigateTo('home')}>AGB</button>
+            <button type="button" onClick={() => navigateTo('agb')}>AGB</button>
           </nav>
           <div className="footer-right">
             <span className="footer-copy">&copy; 2026 DEUKOM. Alle Rechte vorbehalten.</span>

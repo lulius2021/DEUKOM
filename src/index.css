@@ -575,13 +575,103 @@ textarea {
 .stage-card {
   position: relative;
   overflow: hidden;
-  min-height: clamp(32rem, 85vh, 60rem);
+  min-height: clamp(28rem, 55vh, 42rem);
   border-radius: calc(2.2rem * (1 - var(--t, 0)));
   transition: border-radius 0.05s linear;
   display: grid;
   place-items: center;
   background:
     radial-gradient(circle at 50% 32%, rgba(255, 255, 255, 0.95), rgba(242, 232, 218, 0.9) 42%, rgba(214, 196, 174, 0.82) 72%, rgba(135, 96, 59, 0.18) 100%);
+}
+
+/* Hero Screen */
+
+/* Hero Mission Panel */
+
+.hero-mission {
+  background: #0a0a0a;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+}
+
+.mission-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: clamp(2.5rem, 5vw, 5rem);
+  gap: 1.5rem;
+}
+
+.mission-eyebrow {
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.mission-title {
+  margin: 0;
+  font-size: clamp(2.8rem, 5.5vw, 4.5rem);
+  font-weight: 300;
+  color: #fff;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.mission-sub {
+  margin: 0;
+  font-size: clamp(0.95rem, 1.3vw, 1.15rem);
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.6;
+  max-width: 24rem;
+}
+
+.mission-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.mission-image {
+  width: 60%;
+  height: auto;
+  object-fit: cover;
+  display: block;
+  border-radius: 0.8rem;
+}
+
+.mission-cta {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  padding: 0.7rem 1.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 2rem;
+  background: transparent;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.mission-cta:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+@media (max-width: 768px) {
+  .hero-mission {
+    grid-template-columns: 1fr;
+  }
+
+  .mission-visual {
+    min-height: 16rem;
+  }
 }
 
 .stage-halo {
@@ -1226,24 +1316,26 @@ textarea {
   align-items: flex-start;
   gap: 0;
   opacity: 0;
-  transform: translateX(10px);
-  transition: opacity 0.6s cubic-bezier(0.25, 0.1, 0.25, 1), transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+  transition: opacity 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
   pointer-events: none;
 }
 
 .bl-annotation.bl-anno-visible {
   opacity: 1;
-  transform: translateX(0);
   pointer-events: auto;
 }
 
 .bl-annotation-right {
-  left: calc(100% + 1.5rem);
+  left: calc(100% + 2rem);
   flex-direction: row;
 }
 
+.bl-annotation-right .bl-anno-line {
+  transform-origin: left center;
+}
+
 .bl-annotation-left {
-  right: calc(100% + 1.5rem);
+  right: calc(100% + 2rem);
   flex-direction: row-reverse;
 }
 
@@ -1251,40 +1343,60 @@ textarea {
   text-align: right;
 }
 
+.bl-annotation-left .bl-anno-line {
+  transform-origin: right center;
+}
+
 .bl-anno-line {
-  width: 3rem;
+  width: 4rem;
   height: 2px;
-  background: var(--color-text);
-  margin-top: 0.7rem;
+  background: rgba(0, 0, 0, 0.4);
+  margin-top: 0.9rem;
   flex-shrink: 0;
+  transform: scaleX(0);
+  transition: transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1) 0.2s;
+}
+
+.bl-anno-visible .bl-anno-line {
+  transform: scaleX(1);
 }
 
 .bl-anno-text {
-  max-width: 14rem;
-  padding: 0 0.8rem;
+  min-width: 16rem;
+  max-width: 24rem;
+  padding: 0 1rem;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.5s ease 0.5s, transform 0.5s ease 0.5s;
+}
+
+.bl-anno-visible .bl-anno-text {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .bl-anno-text strong {
-  font-size: 0.85rem;
+  font-size: 1.1rem;
   font-weight: 700;
   display: block;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
 }
 
 .bl-anno-text p {
   margin: 0;
-  font-size: 0.8rem;
-  line-height: 1.5;
-  color: var(--color-muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-secondary);
 }
 
-/* Annotation positions */
-.bl-anno-kunden { top: 8rem; }
-.bl-anno-sops { top: 19rem; }
-.bl-anno-team { top: 26rem; }
-.bl-anno-vorlagen { top: 32rem; }
-.bl-anno-skills { top: 39rem; }
-.bl-anno-regeln { top: 46rem; }
+/* Annotation positions — aligned to folder sections */
+.bl-anno-kunden { top: 10rem; }
+.bl-anno-sops { top: 22rem; }
+.bl-anno-team { top: 31rem; }
+.bl-anno-vorlagen { top: 36rem; }
+.bl-anno-skills { top: 44rem; }
+.bl-anno-regeln { top: 50rem; }
 
 @media (max-width: 1200px) {
   .bl-annotation {
@@ -1624,6 +1736,80 @@ textarea {
   }
 }
 
+/* --- Legal Pages --- */
+
+.legal-page {
+  padding-bottom: 8rem;
+}
+
+.legal-header h1 {
+  margin: 0.5rem 0 0;
+  font-size: clamp(2.8rem, 5vw, 4rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+.legal-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.legal-header p.legal-intro {
+  margin: 1rem auto 0;
+  max-width: 36rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-secondary);
+}
+
+.legal-body {
+  max-width: 48rem;
+  margin: 0 auto;
+}
+
+.legal-body h2 {
+  margin: 3rem 0 0.8rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.legal-body h2:first-child {
+  margin-top: 0;
+}
+
+.legal-body h3 {
+  margin: 1.5rem 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.legal-body p {
+  margin: 0 0 0.8rem;
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: var(--color-secondary);
+}
+
+.legal-body strong {
+  color: var(--color-text);
+}
+
+.legal-body hr {
+  border: none;
+  border-top: 1px solid var(--color-line);
+  margin: 2.5rem 0;
+}
+
+.legal-note {
+  margin-top: 3rem;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  font-style: italic;
+  text-align: center;
+}
+
 .page-section {
   margin-top: 5rem;
 }
@@ -1836,19 +2022,12 @@ textarea {
 .footer-left {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0;
 }
 
-.footer-logo {
-  width: 1.6rem;
-  height: 1.6rem;
-  background: #0a0a0a;
-  color: var(--color-bg);
-  border-radius: 0.3rem;
-  display: grid;
-  place-items: center;
-  font-weight: 700;
-  font-size: 0.75rem;
+.footer-logo-img {
+  height: 1.8rem;
+  width: auto;
 }
 
 .footer-brand-name {
